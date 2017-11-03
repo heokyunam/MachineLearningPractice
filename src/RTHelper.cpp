@@ -6,13 +6,14 @@
 
 
 RTHelper::RTHelper() {
+  random_tree = RTrees::create();
 }
 
-RTHelper::~RTHelper() {
+RTHelper::~RTHelper() {/*
     for(int i =0 ; i < datas.size(); i++) {
 	delete[] datas[i];
     }
-    datas.clear();
+    datas.clear();*/
 }
 
 int RTHelper::getSize(char* header, int length) {
@@ -32,6 +33,7 @@ void RTHelper::load(char* filename) {
     char buffer[BUFFER_SIZE];
     is.getline(buffer, BUFFER_SIZE);
     this->size = getSize(buffer, BUFFER_SIZE);
+    memcpy(header, buffer, BUFFER_SIZE);
     
     while(!is.eof()) {
 	is.getline(buffer, BUFFER_SIZE);
@@ -53,22 +55,32 @@ void RTHelper::load(char* filename) {
 }
 
 
-void RTHelper::spartial4(char* filename, double x, double y) {
+void RTHelper::spartial4(char* filename, double x, double y, double z) {
     //데이터 파일 하나에 다 넣을 예정
     vector<double*> writeDataVec;
     for(int i = 0; i < datas.size(); i++) {
-	double* temp[4];
-	for(int j = 0; j < 4; j++) {
+	double* temp[8];
+	for(int j = 0; j < 8; j++) {
 	    double* tempD = new double[this->size];
 	    memset(tempD, 0, this->size * sizeof(double));
+	    tempD[this->size-1] = datas[i][this->size-1];
 	    temp[j] = tempD;
-	    
-	    writeDataVec.push_back(tempD);
 	}
 	
 	for(int j = 0; j < this->size; j+=3) {
 	    double tempX = datas[i][j];
 	    double tempY = datas[i][j+1];
+	    double tempZ = datas[i][j+2];
+	    
+	    int idxX = (tempX > x)? 0 : 1;
+	    int idxY = (tempY > y)? 0 : 1;
+	    int idxZ = (tempZ > z)? 0 : 1;
+	    
+	    int idx = idxX + 2 * idxY + 4 * idxZ;
+	    temp[idx][j] = tempX;
+	    temp[idx][j+1] = tempY;
+	    temp[idx][j+2] = tempZ;
+	    /*
 	    if(tempX > x) {
 		if(tempY > y) {
 		    temp[0][j] = tempX;
@@ -92,29 +104,53 @@ void RTHelper::spartial4(char* filename, double x, double y) {
 		    temp[3][j+1] = tempY;
 		    temp[3][j+2] = datas[i][j+2];
 		}
-	    }
+	    }*/
+	}
+	
+	for(int j = 0; j < 8; j++) {
+	    writeDataVec.push_back(temp[j]);
 	}
     }
     
-    /*
+    
     ofstream os(filename);
-    write(os, data);
-    os.flush();*/
+    write(os, writeDataVec);
+    os.flush();
 }
 
 
 void RTHelper::write(ofstream& of, vector<double*> data)
 {
+    of << header << endl;
     for(int i = 0; i < data.size(); i++) {
-	double* arr = data[i];/*
+	double* arr = data[i];
 	for(int j = 0; j < this->size; j++) {
-	    //of << arr[j];
+	    of << arr[j];
 	    if(j == this->size - 1) {
-		//of << endl;
+		of << endl;
 	    }
 	    else {
-		//of << ",";
+		of << ",";
 	    }
-	}*/
+	}
     }
+}
+
+
+void RTHelper::addTrainData(char* filename) {
+    Ptr<TrainData> train = TrainData::loadFromCSV(filename, 1, -1, -1);
+    random_tree->train(train);
+}
+
+
+void RTHelper::save(char* filename) {
+    random_tree->save(filename);
+}
+
+
+Mat RTHelper::predict(char* filename) {
+    Mat mat;
+    Ptr<TrainData> predict = TrainData::loadFromCSV(filename, 1, -1, -1);
+    random_tree->predict(predict->getSamples(), mat);
+    return mat;
 }
