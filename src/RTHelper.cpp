@@ -88,10 +88,7 @@ void RTHelper::spartial4(char* filename, double x, double y, double z) {
 	for(int j = 0; j < 8; j++) {
 	    if(notZero[j])
 		writeDataVec.push_back(temp[j]);
-	    else
-		cout << "e";
 	}
-	cout << endl;
     }
     
     
