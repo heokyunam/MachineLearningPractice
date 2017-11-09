@@ -60,14 +60,16 @@ void RTHelper::spartial4(char* filename, double x, double y, double z) {
     vector<double*> writeDataVec;
     for(int i = 0; i < datas.size(); i++) {
 	double* temp[8];
+	bool notZero[8];
 	for(int j = 0; j < 8; j++) {
 	    double* tempD = new double[this->size];
 	    memset(tempD, 0, this->size * sizeof(double));
 	    tempD[this->size-1] = datas[i][this->size-1];
 	    temp[j] = tempD;
+	    notZero[j] = false;
 	}
 	
-	for(int j = 0; j < this->size; j+=3) {
+	for(int j = 0; j < this->size - 1; j+=3) {
 	    double tempX = datas[i][j];
 	    double tempY = datas[i][j+1];
 	    double tempZ = datas[i][j+2];
@@ -80,36 +82,16 @@ void RTHelper::spartial4(char* filename, double x, double y, double z) {
 	    temp[idx][j] = tempX;
 	    temp[idx][j+1] = tempY;
 	    temp[idx][j+2] = tempZ;
-	    /*
-	    if(tempX > x) {
-		if(tempY > y) {
-		    temp[0][j] = tempX;
-		    temp[0][j+1] = tempY;
-		    temp[0][j+2] = datas[i][j+2];
-		}
-		else {
-		    temp[1][j] = tempX;
-		    temp[1][j+1] = tempY;
-		    temp[1][j+2] = datas[i][j+2];
-		}
-	    }
-	    else {
-		if(tempY > x) {
-		    temp[2][j] = tempX;
-		    temp[2][j+1] = tempY;
-		    temp[2][j+2] = datas[i][j+2];
-		}
-		else {
-		    temp[3][j] = tempX;
-		    temp[3][j+1] = tempY;
-		    temp[3][j+2] = datas[i][j+2];
-		}
-	    }*/
+	    
+	    notZero[idx] = true;
 	}
-	
 	for(int j = 0; j < 8; j++) {
-	    writeDataVec.push_back(temp[j]);
+	    if(notZero[j])
+		writeDataVec.push_back(temp[j]);
+	    else
+		cout << "e";
 	}
+	cout << endl;
     }
     
     
