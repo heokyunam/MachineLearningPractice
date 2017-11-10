@@ -55,16 +55,16 @@ void RTHelper::load(char* filename) {
 }
 
 
-void RTHelper::spartial4(char* filename, double x, double y, double z) {
+void RTHelper::spartial4(
+    vector<double*>& writeDataVec, double x, double y, double z) {
     //데이터 파일 하나에 다 넣을 예정
-    vector<double*> writeDataVec;
     for(int i = 0; i < datas.size(); i++) {
 	double* temp[8];
 	bool notZero[8];
 	for(int j = 0; j < 8; j++) {
 	    double* tempD = new double[this->size];
 	    memset(tempD, 0, this->size * sizeof(double));
-	    tempD[this->size-1] = datas[i][this->size-1];
+	    tempD[this->size-1] = datas[i][this->size-1];//answer init
 	    temp[j] = tempD;
 	    notZero[j] = false;
 	}
@@ -90,11 +90,6 @@ void RTHelper::spartial4(char* filename, double x, double y, double z) {
 		writeDataVec.push_back(temp[j]);
 	}
     }
-    
-    
-    ofstream os(filename);
-    write(os, writeDataVec);
-    os.flush();
 }
 
 

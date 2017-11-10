@@ -19,7 +19,8 @@ public:
   ~RTHelper();
   int getSize(char* header, int length);
   void load(char* filename);
-  void spartial4(char* filename, double x, double y, double z);
+  void spartial4(
+    vector<double*>& writeDataVec, double x, double y, double z);
   void write(ofstream& of, vector<double*> data);
   void addTrainData(char* filename);
   void save(char* filename);
